@@ -45,7 +45,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         <h2>Book an Appointment</h2>
         <p>Fill in the details below to schedule an appointment.</p>
         <form id="appointmentForm">
-            <label for="patient-name">Full Name:</label>
+            <label for="patient-name">Patient Full Name:</label>
             <input type="text" id="patient-name" name="patient-name" placeholder="Enter Full Name" required>
 
             <label for="contact-number">Contact Number:</label>
