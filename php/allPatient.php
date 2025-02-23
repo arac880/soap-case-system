@@ -18,6 +18,7 @@ include '../php/db-conn.php';
             <thead>
                 <tr>
                     <th>Patient ID</th>
+                    <th>Patient Number</th>
                     <th>Full Name</th>
                     <th>Date of Birth</th>
                     <th>Contact</th>
@@ -34,6 +35,7 @@ include '../php/db-conn.php';
                     while ($row = $result->fetch_assoc()) {
                         echo "<tr>
                                 <td>{$row['Patient_ID']}</td>
+                                <td>{$row['Patient_Number']}</td>
                                 <td>{$row['First_Name']} {$row['Last_Name']}</td>
                                 <td>{$row['Date_of_Birth']}</td>
                                 <td>{$row['Contact_Number']}</td>
@@ -52,11 +54,7 @@ include '../php/db-conn.php';
 
     <script>
     function goBack() {
-        if (document.referrer) {
         window.history.back();
-        } else {
-            window.location.href = "index.php"; 
-        }
     }
     </script>
 </body>

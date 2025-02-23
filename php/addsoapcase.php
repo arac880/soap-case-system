@@ -2,25 +2,59 @@
 include '../php/db-conn.php';
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $caseNumber = $_POST['case-number'];
-    $patientNumber = $_POST['patient-number'];
-    $diagnosis = $_POST['diagnosis'];
-    $symptoms = $_POST['symptoms'];
-    $treatmentPlan = $_POST['treatment-plan'];
+    header('Content-Type: application/json');
+
+    $patientNumber = trim($_POST['patient-number']);
+    $diagnosis = trim($_POST['diagnosis']);
+    $symptoms = trim($_POST['symptoms']);
+    $treatmentPlan = trim($_POST['treatment-plan']);
     $caseStatus = $_POST['case-status'];
     $admissionDate = $_POST['admission-date'];
-    $dischargeDate = $_POST['discharge-date'];
+    $dischargeDate = !empty($_POST['discharge-date']) ? $_POST['discharge-date'] : null;
 
-    $sql = "INSERT INTO Patient_Cases (Case_Number, Patient_Number, Diagnosis, Symptoms, Treatment_Plan, Case_Status, Admission_Date, Discharge_Date) 
-            VALUES ('$caseNumber', '$patientNumber', '$diagnosis', '$symptoms', '$treatmentPlan', '$caseStatus', '$admissionDate', '$dischargeDate')";
+    // generate a unique Case Number
+    $caseNumber = uniqid('CASE-');
 
-    if (mysqli_query($conn, $sql)) {
-        $response = array("status" => "success", "message" => "SOAP case added successfully.");
-    } else {
-        $response = array("status" => "error", "message" => "Error: " . $sql . "<br>" . mysqli_error($conn));
+    // required fields
+    if (empty($patientNumber) || empty($diagnosis) || empty($symptoms) || empty($caseStatus) || empty($admissionDate)) {
+        echo json_encode(["status" => "error", "message" => "All required fields must be filled."]);
+        exit();
     }
 
-    echo json_encode($response);
+    // validate Patient exists
+    $checkPatientQuery = "SELECT Patient_Number FROM Patients WHERE Patient_Number = ?";
+    $checkStmt = $conn->prepare($checkPatientQuery);
+    $checkStmt->bind_param("s", $patientNumber);
+    $checkStmt->execute();
+    $result = $checkStmt->get_result();
+
+    if ($result->num_rows == 0) {
+        echo json_encode(["status" => "error", "message" => "Patient not found."]);
+        exit();
+    }
+    $checkStmt->close();
+
+    // prevemt future discharge dates for closed cases
+    if ($caseStatus === "Closed" && empty($dischargeDate)) {
+        echo json_encode(["status" => "error", "message" => "Discharge Date is required for closed cases."]);
+        exit();
+    }
+
+    // insert SOAP Case
+    $sql = "INSERT INTO Patient_Cases (Case_Number, Patient_Number, Diagnosis, Symptoms, Treatment_Plan, Case_Status, Admission_Date, Discharge_Date) 
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("ssssssss", $caseNumber, $patientNumber, $diagnosis, $symptoms, $treatmentPlan, $caseStatus, $admissionDate, $dischargeDate);
+
+    if ($stmt->execute()) {
+        echo json_encode(["status" => "success", "message" => "SOAP case added successfully."]);
+    } else {
+        echo json_encode(["status" => "error", "message" => "Error: " . $stmt->error]);
+    }
+
+    $stmt->close();
+    $conn->close();
     exit();
 }
 ?>
@@ -38,9 +72,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         <h2>Add SOAP Case</h2>
         <p>Fill in the information below to add a SOAP case.</p>
         <form id="soapCaseForm">
-            <label for="case-number">Case Number:</label>
-            <input type="text" id="case-number" name="case-number" placeholder="Enter Case Number" required>
-
             <label for="patient-number">Patient Number:</label>
             <input type="text" id="patient-number" name="patient-number" placeholder="Enter Patient Number" required>
 
@@ -54,7 +85,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             <textarea id="treatment-plan" name="treatment-plan" placeholder="Enter Treatment Plan"></textarea>
 
             <label for="case-status">Case Status:</label>
-            <select id="case-status" name="case-status" required>
+            <select id="case-status" name="case-status" required onchange="toggleDischargeDate()">
                 <option value="Open">Open</option>
                 <option value="In Progress">In Progress</option>
                 <option value="Closed">Closed</option>
@@ -64,10 +95,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             <input type="date" id="admission-date" name="admission-date" required>
 
             <label for="discharge-date">Discharge Date:</label>
-            <input type="date" id="discharge-date" name="discharge-date">
+            <input type="date" id="discharge-date" name="discharge-date" disabled>
 
             <div class="buttons">
-            <button type="button" class="cancel" onclick="goback()">CANCEL</button></a>
+                <button type="button" class="cancel" onclick="goback()">CANCEL</button>
                 <button type="submit" class="submit">SUBMIT</button>
             </div>
         </form>
@@ -92,9 +123,18 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         })
         .catch(error => console.error("Error:", error));
     });
-    function goback(){
+
+    function toggleDischargeDate() {
+        let caseStatus = document.getElementById("case-status").value;
+        let dischargeDate = document.getElementById("discharge-date");
+        dischargeDate.disabled = (caseStatus !== "Closed");
+        if (dischargeDate.disabled) dischargeDate.value = "";
+    }
+
+    function goback() {
         window.history.back();
     }
     </script>
 </body>
 </html>
+

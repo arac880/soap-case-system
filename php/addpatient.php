@@ -2,29 +2,45 @@
 include '../php/db-conn.php';
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $patientNumber = $_POST['patient-id'];
-    $firstName = $_POST['first-name'];
-    $lastName = $_POST['last-name'];
+    header('Content-Type: application/json');
+
+    $firstName = trim($_POST['first-name']);
+    $lastName = trim($_POST['last-name']);
     $age = $_POST['age'];
     $dob = $_POST['dob'];
-    $contactNumber = $_POST['contact-phone'];
-    $address = $_POST['address'];
-    $email = $_POST['email'];
+    $contactNumber = trim($_POST['contact-phone']);
+    $address = trim($_POST['address']);
+    $email = trim($_POST['email']);
     $gender = $_POST['gender'];
 
-    $sql = "INSERT INTO Patients (Patient_Number, First_Name, Last_Name, Age, Date_of_Birth, Contact_Number, Address, Email, Gender) 
-            VALUES ('$patientNumber', '$firstName', '$lastName', '$age', '$dob', '$contactNumber', '$address', '$email', '$gender')";
+    // generate a unique Patient Number
+    $patientNumber = uniqid('PAT-');
 
-    if (mysqli_query($conn, $sql)) {
-        $response = array("status" => "success", "message" => "Patient added successfully.");
-    } else {
-        $response = array("status" => "error", "message" => "Error: " . $sql . "<br>" . mysqli_error($conn));
+    // validate
+    if (empty($firstName) || empty($lastName) || empty($age) || empty($dob) || empty($email) || empty($gender)) {
+        echo json_encode(["status" => "error", "message" => "All fields are required."]);
+        exit();
     }
 
-    echo json_encode($response);
+    // insert Patient
+    $sql = "INSERT INTO Patients (Patient_Number, First_Name, Last_Name, Age, Date_of_Birth, Contact_Number, Address, Email, Gender) 
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+    
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("sssisssss", $patientNumber, $firstName, $lastName, $age, $dob, $contactNumber, $address, $email, $gender);
+
+    if ($stmt->execute()) {
+        echo json_encode(["status" => "success", "message" => "Patient added successfully."]);
+    } else {
+        echo json_encode(["status" => "error", "message" => "Error: " . $stmt->error]);
+    }
+
+    $stmt->close();
+    $conn->close();
     exit();
 }
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -33,21 +49,17 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SOAP General Medical Clinic - Add Patient</title>
     <link rel="stylesheet" href="../CSS/addPatient.css">
-    
 </head>
 <body>
     <div class="container">
         <h2>SOAP Medical Clinic</h2>
         <p>Fill in the information below to add a patient.</p>
         <form id="patientForm">
-            <label for="name">Patient ID:</label>
-            <input type="text" id="patient-id" name="patient-id" placeholder="Enter Patient ID" required>
-
-            <label for="name">First Name:</label>
+            <label for="first-name">First Name:</label>
             <input type="text" id="first-name" name="first-name" placeholder="Enter First Name" required>
 
-            <label for="name">Last Name:</label>
-            <input type="text" id="last-name" name="first-name" placeholder="Enter Last Name" required>
+            <label for="last-name">Last Name:</label>
+            <input type="text" id="last-name" name="last-name" placeholder="Enter Last Name" required>
             
             <label for="age">Age:</label>
             <input type="number" id="age" name="age" placeholder="Enter Age" required>
@@ -55,13 +67,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             <label for="dob">Date of Birth:</label>
             <input type="date" id="dob" name="dob" required>
 
-            <label for="phone">Conatct Number:</label>
-            <input type="tel" id="conatct-phone" name="conatct-phone" placeholder="Enter Contact Number" required>
+            <label for="contact-phone">Contact Number:</label>
+            <input type="tel" id="contact-phone" name="contact-phone" placeholder="Enter Contact Number" required>
 
-            <label for="name">Address:</label>
+            <label for="address">Address:</label>
             <input type="text" id="address" name="address" placeholder="Enter Address" required>
 
-            <label for="email">Email: </label>
+            <label for="email">Email:</label>
             <input type="email" id="email" name="email" placeholder="Enter Email" required>
 
             <label>Gender:</label>
@@ -96,6 +108,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         })
         .catch(error => console.error("Error:", error));
     });
+
     function goback(){
         window.history.back();
     }
