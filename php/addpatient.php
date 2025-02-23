@@ -1,6 +1,29 @@
 <?php
 include '../php/db-conn.php';
 
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    $patientNumber = $_POST['patient-id'];
+    $firstName = $_POST['first-name'];
+    $lastName = $_POST['last-name'];
+    $age = $_POST['age'];
+    $dob = $_POST['dob'];
+    $contactNumber = $_POST['contact-phone'];
+    $address = $_POST['address'];
+    $email = $_POST['email'];
+    $gender = $_POST['gender'];
+
+    $sql = "INSERT INTO Patients (Patient_Number, First_Name, Last_Name, Age, Date_of_Birth, Contact_Number, Address, Email, Gender) 
+            VALUES ('$patientNumber', '$firstName', '$lastName', '$age', '$dob', '$contactNumber', '$address', '$email', '$gender')";
+
+    if (mysqli_query($conn, $sql)) {
+        $response = array("status" => "success", "message" => "Patient added successfully.");
+    } else {
+        $response = array("status" => "error", "message" => "Error: " . $sql . "<br>" . mysqli_error($conn));
+    }
+
+    echo json_encode($response);
+    exit();
+}
 ?>
 
 <!DOCTYPE html>
@@ -8,13 +31,13 @@ include '../php/db-conn.php';
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Add Patient</title>
-    <link rel="stylesheet" href="../CSS/addpatient.css">
+    <title>SOAP General Medical Clinic - Add Patient</title>
+    <link rel="stylesheet" href="../CSS/addPatient.css">
     
 </head>
 <body>
     <div class="container">
-        <h2>Add Patient</h2>
+        <h2>SOAP Medical Clinic</h2>
         <p>Fill in the information below to add a patient.</p>
         <form id="patientForm">
             <label for="name">Patient ID:</label>
@@ -48,7 +71,7 @@ include '../php/db-conn.php';
             </div>
 
             <div class="buttons">
-                <button type="reset" class="cancel">CANCEL</button>
+                <button type="button" class="cancel" onclick="goback()">CANCEL</button>
                 <button type="submit" class="submit">SUBMIT</button>
             </div>
         </form>
@@ -60,7 +83,7 @@ include '../php/db-conn.php';
 
         let formData = new FormData(this);
 
-        fetch("http://localhost/CCS112/group-ni-ara/add_patient.php", {
+        fetch("addpatient.php", {
             method: "POST",
             body: formData,
         })
@@ -73,6 +96,9 @@ include '../php/db-conn.php';
         })
         .catch(error => console.error("Error:", error));
     });
+    function goback(){
+        window.history.back();
+    }
     </script>
 </body>
 </html>

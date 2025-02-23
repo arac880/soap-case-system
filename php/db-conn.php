@@ -3,7 +3,7 @@ $servername = "localhost";
 $username = "root";  // Change if you use a different username
 $password = "";      // Change if you set a MySQL password
 $database = "";
-$port = 4306;  // Change if you have different a port
+$port = 3306;  // Change if you have different a port
 
 
 // Create connection

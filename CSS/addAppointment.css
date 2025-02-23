@@ -1,0 +1,80 @@
+/* General Page Styling */
+body {
+    font-family: Arial, sans-serif;
+    background: #e6ffe6;
+    margin: 0;
+    padding: 0;
+}
+
+/* Form Container */
+.container {
+    width: 50%;
+    margin: 50px auto;
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Title */
+h2 {
+    color: #2d6a4f;
+    text-align: center;
+}
+
+/* Form Labels */
+label {
+    display: block;
+    margin: 10px 0 5px;
+    font-weight: bold;
+    color: #40916c;
+}
+
+/* Input Fields */
+input[type="text"],
+input[type="email"],
+input[type="tel"],
+input[type="date"],
+input[type="time"],
+textarea,
+select {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #74c69d;
+    border-radius: 5px;
+    display: block;
+    box-sizing: border-box;
+    margin-bottom: 10px;
+}
+
+/* Select Dropdown */
+select {
+    appearance: none;
+    background: white;
+}
+
+/* Buttons */
+.buttons {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+}
+
+button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+/* Cancel Button */
+.cancel {
+    background: #b7e4c7;
+    color: #1b4332;
+}
+
+/* Submit Button */
+.submit {
+    background: #1b4332;
+    color: white;
+}

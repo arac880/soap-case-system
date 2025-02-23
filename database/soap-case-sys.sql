@@ -1,10 +1,10 @@
-CREATE DATABASE soap-case-sys;
+CREATE DATABASE soap_case_sys;
 
-USE soap-case-sys;
+USE soap_case_sys;
 
 -- user's table
 CREATE TABLE users (
-    id INT(11)PRIMARY KEY NOT NULL AUTO_INCREMENT,
+    id INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
     username VARCHAR(50) NOT NULL,
     password VARCHAR(16) NOT NULL
 );
@@ -41,3 +41,15 @@ CREATE TABLE Patient_Cases (
     Discharge_Date DATE,
     FOREIGN KEY (Patient_Number) REFERENCES Patients(Patient_Number) ON DELETE CASCADE
 );
+
+-- Appointments Table
+CREATE TABLE Appointments (
+    Appointment_ID INT AUTO_INCREMENT PRIMARY KEY,
+    Patient_ID INT NOT NULL,
+    Appointment_Date DATE NOT NULL,
+    Appointment_Time TIME NOT NULL,
+    Reason VARCHAR(255) NOT NULL,
+    FOREIGN KEY (Patient_ID) REFERENCES Patients(Patient_ID) ON DELETE CASCADE
+);
+
+
