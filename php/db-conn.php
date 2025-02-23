@@ -2,7 +2,7 @@
 $servername = "localhost";
 $username = "root";  // Change if you use a different username
 $password = "";      // Change if you set a MySQL password
-$database = "";
+$database = "soap_case_sys";
 $port = 3306;  // Change if you have different a port
 
 

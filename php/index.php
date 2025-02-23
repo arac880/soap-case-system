@@ -14,9 +14,9 @@ include '../php/db-conn.php';
     <div class="dashboard-container">
         <div class="sidebar">
             <h2>Dashboard</h2>
-            <button class="menu-btn">All Patient Records</button>
-            <button class="menu-btn">All SOAP Cases</button>
-            <button class="menu-btn">All Appointments</button>
+            <button class="menu-btn" onclick="window.location.href='allPatient.php'">All Patient Records</button>
+            <button class="menu-btn" onclick="window.location.href='allSoapCase.php'">All SOAP Cases</button>
+            <button class="menu-btn" onclick="window.location.href='allAppointment.php'">All Appointments</button>
             <button class="menu-btn logout-btn" onclick="showConfirmDialog();">Log out</button>
         </div>
 
