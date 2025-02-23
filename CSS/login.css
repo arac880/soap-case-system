@@ -1,0 +1,74 @@
+body {
+    font-family: 'Poppins';
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 95vh;
+    background: url('/soap-medical/img/doc.jpg') no-repeat center center/cover;
+
+}
+  .logo {
+    position: fixed;
+    margin-bottom: 35%;
+    left: 1px;
+    width: 300px;
+  }
+
+.login-container {
+    background: white;
+    padding: 40px ;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(2, 2, 2, 0.403);
+    width: 500px;
+    height: 430px;
+    text-align: center;
+    margin-top: 50px;
+}
+.input-group {
+    margin-bottom: 40px;
+    text-align: left;
+    position: relative;
+}
+.input-group label {
+    display: block;
+    font-weight: bold;
+    margin-top: 20px;
+    font-size: large;
+}   
+.input-group input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px; 
+}
+.toggle-password {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+}
+.login-btn {
+    width: 100%;
+    padding: 10px;
+    background: #31511E;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 18px;
+    font-family: 'Poppins';
+}
+.login-btn:hover {
+    background: #3E7B27;
+}
+.forgot-password {
+    margin-top: 10px;
+}
+.forgot-password a {
+    color: red;
+    text-decoration: none;
+}
+.forgot-password a:hover {
+    text-decoration: underline;
+}
